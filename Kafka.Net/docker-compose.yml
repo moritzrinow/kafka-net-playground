@@ -32,15 +32,11 @@ services:
             - "9101:9101"
         environment:
             - ALLOW_PLAINTEXT_LISTENER=yes
-            - KAFKA_BROKER_ID=1
             - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-            - KAFKA_LISTENERS=PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-            - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-            - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-            #- KAFKA_LISTENERS=INTERNAL://kafka:9092,EXTERNAL://localhost:19092
-            #- KAFKA_ADVERTISED_LISTENERS=INTERNAL://kafka:9092,EXTERNAL://localhost:19092
-            #- KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-            #- KAFKA_INTER_BROKER_LISTENER_NAME=INTERNAL
+            - KAFKA_LISTENERS=INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092
+            - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+            - KAFKA_ADVERTISED_LISTENERS=INTERNAL://kafka:9093,EXTERNAL://localhost:9092
+            - KAFKA_INTER_BROKER_LISTENER_NAME=INTERNAL
         restart: always
         depends_on:
             - zookeeper
@@ -54,33 +50,36 @@ services:
         ports:
             - "9000:9000"
         environment:
-            - KAFKA_BROKERCONNECT=kafka:29092
+            - KAFKA_BROKERCONNECT=kafka:9093
             - JVM_OPTS=-Xms32M -Xmx64M
             - SERVER_SERVLET_CONTEXTPATH=/
         restart: always
         depends_on:
             - kafka
             
-    producer:
-        container_name: producer
-        hostname: producer
-        image: kafka-net/producer
-        build:
-            context: Kafka.Producer
-            dockerfile: Dockerfile
-        networks:
-            - kafka
-        depends_on:
-            - kafka
+            
+    # Uncomment block to run producer and consumer as docker containers within the kafka network
     
-    consumer:
-        container_name: consumer
-        hostname: consumer
-        image: kafka-net/consumer
-        build:
-            context: Kafka.Consumer
-            dockerfile: Dockerfile
-        networks:
-            - kafka
-        depends_on:
-            - kafka
+    #producer:
+    #    container_name: producer
+    #    hostname: producer
+    #    image: kafka-net/producer
+    #    build:
+    #        context: Kafka.Producer
+    #        dockerfile: Dockerfile
+    #    networks:
+    #        - kafka
+    #    depends_on:
+    #        - kafka
+    
+    #consumer:
+    #    container_name: consumer
+    #    hostname: consumer
+    #    image: kafka-net/consumer
+    #    build:
+    #        context: Kafka.Consumer
+    #        dockerfile: Dockerfile
+    #    networks:
+    #        - kafka
+    #    depends_on:
+    #        - kafka
