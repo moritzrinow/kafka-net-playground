@@ -1,6 +1,7 @@
 namespace Kafka.Producer
 {
   using Confluent.Kafka;
+  using Kafka.Common.Services;
   using Microsoft.Extensions.DependencyInjection;
   using Microsoft.Extensions.Hosting;
 
@@ -18,6 +19,7 @@ namespace Kafka.Producer
                  {
                    services.Configure<AdminClientConfig>(hostContext.Configuration.GetSection("AdminConfig"));
                    services.Configure<ProducerConfig>(hostContext.Configuration.GetSection("ProducerConfig"));
+                   services.AddKafkaMetrics();
                    services.AddHostedService<Worker>();
                  });
     }
