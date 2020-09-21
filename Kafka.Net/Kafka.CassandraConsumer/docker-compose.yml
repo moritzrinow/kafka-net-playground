@@ -1,0 +1,63 @@
+version: "3"
+
+networks:
+    cassandra:
+        driver: bridge
+        name: cassandra
+
+volumes:
+    cassandra1:
+        name: cassandra1
+    #cassandra2:
+    #    name: cassandra2
+    #cassandra3:
+    #    name: cassandra3
+        
+services:
+    cassandra1:
+        container_name: cassandra-1
+        hostname: cassandra-1
+        image: bitnami/cassandra
+        restart: always
+        volumes:
+            - cassandra1:/bitnami
+            - ./cassandra.yml:/bitnami/cassandra/conf/cassandra.yml
+        networks:
+            - cassandra
+        ports:
+            - "9042:9042"
+        environment:
+            - CASSANDRA_TRANSPORT_PORT_NUMBER=7000
+            - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+            - CASSANDRA_SEEDS=cassandra-1
+            #- CASSANDRA_USER=cassandra
+            #- CASSANDRA_PASSWORD=cassandra
+            #- CASSANDRA_PASSWORD_SEEDER=yes
+    
+    #cassandra2:
+    #    container_name: cassandra-2
+    #    hostname: cassandra-2
+    #    image: bitnami/cassandra
+    #    restart: always
+    #    volumes:
+    #        - cassandra2:/bitnami
+    #    networks:
+    #        - cassandra
+    #    environment:
+    #        - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+    #        - CASSANDRA_SEEDS=cassandra-1,cassandra-2,cassandra-3
+    #        - JVM_OPTS="-Xms2g -Xmx2g"
+            
+    #cassandra3:
+    #    container_name: cassandra-3
+    #    hostname: cassandra-3
+    #    image: bitnami/cassandra
+    #    restart: always
+    #    volumes:
+    #        - cassandra3:/bitnami
+    #    networks:
+    #        - cassandra
+    #    environment:
+    #        - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+    #        - CASSANDRA_SEEDS=cassandra-1,cassandra-2,cassandra-3
+    #        - JVM_OPTS="-Xms2g -Xmx2g"

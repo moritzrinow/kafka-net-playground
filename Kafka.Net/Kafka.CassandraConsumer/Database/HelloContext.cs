@@ -4,19 +4,24 @@
   using Kafka.CassandraConsumer.Models;
   using Microsoft.EntityFrameworkCore;
   using Microsoft.EntityFrameworkCore.Migrations;
+  using Microsoft.Extensions.Logging;
   using Microsoft.Extensions.Options;
 
   public class HelloContext : DbContext
   {
     private readonly CassandraSettings settings;
 
+    private readonly ILoggerFactory loggerFactory;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="HelloContext" /> class.
     /// </summary>
     /// <param name="settings">The settings.</param>
-    public HelloContext(IOptions<CassandraSettings> settings)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public HelloContext(IOptions<CassandraSettings> settings, ILoggerFactory loggerFactory)
     {
       this.settings = settings.Value;
+      this.loggerFactory = loggerFactory;
     }
 
     /// <summary>
@@ -50,7 +55,10 @@
     /// </param>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      optionsBuilder.UseCassandra(this.settings.ConnectionString, options => { options.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "master"); });
+      optionsBuilder.UseCassandra(this.settings.ConnectionString, options =>
+      {
+        options.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "master");
+      }).EnableSensitiveDataLogging().UseLoggerFactory(this.loggerFactory);
 
       base.OnConfiguring(optionsBuilder);
     }
